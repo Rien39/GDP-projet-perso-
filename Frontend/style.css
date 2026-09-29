@@ -1,0 +1,65 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.header,
+.footer {
+    background-color: #00366f;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    margin: auto;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+}
+
+th {
+    background-color: #0056b3;
+    color: white;
+}
+
+.present {
+    background-color: #d4edda !important;
+}
+
+.absent {
+    background-color: #f8d7da !important;
+}
+
+#menu,
+#table-container {
+    display: none;
+}
+
+#menu img {
+    display: block;
+    margin: 20px auto;
+    max-width: 200px;
+}
+
+#groupSelect {
+    margin-left: 20px;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+#barcodeInput {
+    outline: none;
+}

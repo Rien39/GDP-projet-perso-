@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestion de Présence</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Police Roboto -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Gestion de Présence</h1>
+    </div>
+
+    <div class="container">
+
+        <!-- Import Excel -->
+        <div class="form-group">
+            <label for="fileInput">
+                Importer la liste Excel
+            </label>
+
+            <input
+                type="file"
+                id="fileInput"
+                accept=".xlsx,.xls"
+                class="form-control-file"
+            >
+        </div>
+
+        <!-- Liste -->
+        <div id="liste">
+
+            <h2 id="classTitle"></h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Code-Barres</th>
+                        <th>Présence</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentTable"></tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Bibliothèque Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+
+    <script>
+
+        const fileInput = document.getElementById("fileInput");
+        const studentTable = document.getElementById("studentTable");
+        const liste = document.getElementById("liste");
+        const classTitle = document.getElementById("classTitle");
+
+        fileInput.addEventListener("change", importerListe);
+
+
+        // Importer le fichier Excel
+        function importerListe(event) {
+
+            const file = event.target.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+
+                const workbook = XLSX.read(
+                    event.target.result,
+                    { type: "array" }
+                );
+
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                const rows = XLSX.utils.sheet_to_json(
+                    sheet,
+                    { header: 1 }
+                );
+
+                afficherListe(rows);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+
+        // Afficher les élèves
+        function afficherListe(rows) {
+
+            studentTable.innerHTML = "";
+
+            let classe = "";
+
+            rows.forEach(row => {
+
+                if (!row[0]) return;
+
+                const texte = String(row[0]).trim();
+
+
+                // Nom de la classe
+                if (texte.toLowerCase().startsWith("classe")) {
+
+                    classe = texte;
+                    classTitle.textContent = classe;
+
+                    return;
+                }
+
+
+                // Ignorer les groupes
+                if (texte.toLowerCase().startsWith("groupe")) {
+                    return;
+                }
+
+
+                // Ajouter un élève
+                if (row[1] !== undefined) {
+
+                    const nom = row[0];
+                    const code = String(row[1]).trim();
+
+                    const ligne = document.createElement("tr");
+
+                    ligne.innerHTML = `
+                        <td>${nom}</td>
+
+                        <td>${code}</td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                class="presence"
+                                onchange="changerPresence(this)"
+                            >
+                        </td>
+                    `;
+
+                    studentTable.appendChild(ligne);
+                }
+
+            });
+
+            liste.style.display = "block";
+        }
+
+
+        // Changer l'état présent / absent
+        function changerPresence(checkbox) {
+
+            const ligne = checkbox.closest("tr");
+
+            if (checkbox.checked) {
+
+                ligne.classList.add("present");
+                ligne.classList.remove("absent");
+
+            } else {
+
+                ligne.classList.add("absent");
+                ligne.classList.remove("present");
+
+            }
+        }
+
+    </script>
+
+</body>
+</html>
